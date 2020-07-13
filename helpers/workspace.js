@@ -14,3 +14,8 @@ module.exports.createWorkspace = (uniqid) => {
         console.log(`${folderPath} generated!`);
     });
 };
+
+module.exports.createEmptyWorkspace = (uniqid) => {
+    const folderPath = `./workspaces/${uniqid}`;
+    fs.mkdirSync(folderPath);
+};
