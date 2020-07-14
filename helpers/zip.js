@@ -4,7 +4,7 @@ var archiver = require('archiver');
 module.exports.createZip = (uniqid) => {
     const folderPath = `./workspaces/${uniqid}`;
 
-    var output = file_system.createWriteStream(folderPath + '/workspace.zip');
+    var output = file_system.createWriteStream(`${folderPath}/workspace.zip`);
     var archive = archiver('zip');
     
     output.on('close', function () {
