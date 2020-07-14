@@ -7,7 +7,11 @@ module.exports.createWorkspace = (uniqid) => {
 
     fs.mkdirSync(folderPath);
 
-    ncp('./workspaces/DEFAULT', folderPath, function (err) {
+    ncp('./workspaces/DEFAULT/docker-compose.yml', folderPath, 
+        { filter: (path) => {
+                return !(path.indexOf("mapper-image")> -1)
+            }
+        }, function (err) {
         if (err) {
             return console.error(err);
         }
