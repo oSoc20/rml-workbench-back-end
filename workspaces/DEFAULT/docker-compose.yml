@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   mapper:
-    build: ./DEFAULT/mapper-image
+    build: ../DEFAULT/mapper-image
     volumes:
       - ./input:/input
       - ./output:/output
