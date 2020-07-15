@@ -7,5 +7,5 @@ module.exports.base64ToFile = function (base64, filename, path) {
 
     stream.push(buffer);
     stream.push(null);
-    stream.pipe(fs.createWriteStream(`./workspaces/${path}/${filename}`));
+    stream.pipe(fs.createWriteStream(`./${path}/${filename}`));
 };
