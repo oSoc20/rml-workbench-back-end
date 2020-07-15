@@ -3,7 +3,7 @@ var compose = require('docker-compose');
 
 //this.editDC(123456, "ttl");
 module.exports.editDC = (uniqid, extension, mapperId) => {
-    const filePath = `./workspaces/${uniqid}/${mapperId}/docker-compose.yml`;
+    const filePath = `./workspaces/${uniqid}/mapper-${mapperId}/docker-compose.yml`;
     const pattern = /\.[output.]\w+/g;
 
     file_system.readFile(filePath, 'utf-8', function (err, data) {
