@@ -1,9 +1,10 @@
 var file_system = require('fs');
 var compose = require('docker-compose');
 
+//this.editDC(123456, "ttl");
 module.exports.editDC = (uniqid, extension) => {
     const filePath = `./workspaces/${uniqid}/docker-compose.yml`;
-    const pattern = /(output.)\w+/g;
+    const pattern = /\.[output.]\w+/g;
 
     file_system.readFile(filePath, 'utf-8', function(err, data){
         if (err)
@@ -18,11 +19,11 @@ module.exports.editDC = (uniqid, extension) => {
         });
 
         if(data.indexOf('container_name') == -1)
-            file_system.appendFileSync(filePath, `container_name: ${uniqid}`);
+            file_system.appendFileSync(filePath, `    container_name: '${uniqid}'`);
     })
 }
 
-//Still need to do some testing on this, should work normally?
+//this.run(123456)
 module.exports.run = (uniqid) => {
     const folderPath = `./workspaces/${uniqid}`;
 

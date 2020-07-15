@@ -1,0 +1,43 @@
+<http://loc.example.com/city/Brussels> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#City>.
+<http://loc.example.com/city/Brussels> <http://example.com/ns#latlong> <http://loc.example.com/latlong/50.901389,4.484444>.
+<http://loc.example.com/city/Brussels> <http://example.com/ns#latlong> <http://loc.example.com/latlong/51.51334,-0.08901>.
+<http://loc.example.com/city/Brussels> <http://example.com/ns#countryCode> "BE".
+<http://loc.example.com/city/Brussels> <http://example.com/ns#onContinent> "EU".
+<http://loc.example.com/city/London> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#City>.
+<http://loc.example.com/city/London> <http://example.com/ns#latlong> <http://loc.example.com/latlong/50.901389,4.484444>.
+<http://loc.example.com/city/London> <http://example.com/ns#latlong> <http://loc.example.com/latlong/51.51334,-0.08901>.
+<http://loc.example.com/city/London> <http://example.com/ns#countryCode> "GB".
+<http://loc.example.com/city/London> <http://example.com/ns#onContinent> "EU".
+<http://airport.example.com/6523> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Stop>.
+<http://airport.example.com/6523> <http://example.com/ns#latlong> <http://loc.example.com/latlong/50.901389,4.484444>.
+<http://airport.example.com/6523> <http://example.com/ns#location> <http://loc.example.com/city/Brussels>.
+<http://loc.example.com/latlong/50.901389,4.484444> <http://example.com/ns#lat> "50.901389".
+<http://loc.example.com/latlong/50.901389,4.484444> <http://example.com/ns#long> "4.484444".
+<http://trans.example.com/bus/25> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Transport>.
+<http://trans.example.com/bus/25> <http://example.com/ns#type> <http://trans.example.com/vehicle/SingeDecker>.
+<http://trans.example.com/bus/25> <http://example.com/ns#stop> <http://trans.example.com/stop/645>.
+<http://trans.example.com/bus/25> <http://example.com/ns#stop> <http://trans.example.com/stop/651>.
+<http://trans.example.com/bus/25> <http://example.com/ns#stop> <http://trans.example.com/stop/873>.
+<http://trans.example.com/bus/25> <http://example.com/ns#stop> <http://trans.example.com/stop/651>.
+<http://trans.example.com/bus/47> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Transport>.
+<http://trans.example.com/bus/47> <http://example.com/ns#type> <http://trans.example.com/vehicle/DoubleDecker>.
+<http://trans.example.com/bus/47> <http://example.com/ns#stop> <http://trans.example.com/stop/645>.
+<http://trans.example.com/bus/47> <http://example.com/ns#stop> <http://trans.example.com/stop/651>.
+<http://trans.example.com/bus/47> <http://example.com/ns#stop> <http://trans.example.com/stop/873>.
+<http://trans.example.com/bus/47> <http://example.com/ns#stop> <http://trans.example.com/stop/651>.
+<http://trans.example.com/stop/645> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Stop>.
+<http://trans.example.com/stop/645> <http://example.com/ns#stop> "645"^^<http://www.w3.org/2001/XMLSchema#int>.
+<http://trans.example.com/stop/645> <http://example.com/ns#stopLabel> "Airport".
+<http://trans.example.com/stop/651> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Stop>.
+<http://trans.example.com/stop/651> <http://example.com/ns#stop> "651"^^<http://www.w3.org/2001/XMLSchema#int>.
+<http://trans.example.com/stop/651> <http://example.com/ns#stopLabel> "Conference center".
+<http://trans.example.com/stop/873> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Stop>.
+<http://trans.example.com/stop/873> <http://example.com/ns#stop> "873"^^<http://www.w3.org/2001/XMLSchema#int>.
+<http://trans.example.com/stop/873> <http://example.com/ns#stopLabel> "Central Park".
+<http://trans.example.com/stop/651> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/ns#Stop>.
+<http://trans.example.com/stop/651> <http://example.com/ns#stop> "651"^^<http://www.w3.org/2001/XMLSchema#int>.
+<http://trans.example.com/stop/651> <http://example.com/ns#stopLabel> "Conference center".
+<http://loc.example.com/latlong/50.901389,4.484444> <http://example.com/ns#lat> "50.901389".
+<http://loc.example.com/latlong/50.901389,4.484444> <http://example.com/ns#long> "4.484444".
+<http://loc.example.com/latlong/51.51334,-0.08901> <http://example.com/ns#lat> "51.51334".
+<http://loc.example.com/latlong/51.51334,-0.08901> <http://example.com/ns#long> "-0.08901".
