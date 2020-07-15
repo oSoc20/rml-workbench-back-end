@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 // Home made
 const b64helper = require('./helpers/base64');
 const workspaceHelper = require('./helpers/workspace');
+const dockerHelper = require('./helpers/dockerCompose');
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -31,25 +32,29 @@ function handleRequest(output, processors, sources, token) {
     let id = 0;
 
     processors.forEach((processor) => {
-        let processorDir = `${token}/mapper-${id}`;
+        workspaceHelper
+            .createWorkspace(token, id)
+            .then((mapperFolder) => {
+                //inputs
+                for (source of processor.sources) {
+                    b64helper.base64ToFile(sources[source], source, `${mapperFolder}/input`);
+                }
 
-        //inputs
-        for (source of processor.sources) {
-            b64helper.base64ToFile(sources[source], source, `${processorDir}/input`);
-        }
+                //mapper-config
+                b64helper.base64ToFile(
+                    processor.config,
+                    'mapper-config.rml.ttl',
+                    `${mapperFolder}/mapper-config`,
+                );
 
-        //mapper-config
-        b64helper.base64ToFile(
-            processor.config,
-            'mapper-config.rml.ttl',
-            `${processorDir}/mapper-config`,
-        );
-
-        //output
-        // TODO
-
-        id++;
+                dockerHelper.editDC(token, processor.target, id);
+            })
+            .catch((err) => console.error(err))
+            .finally(() => id++);
     });
+
+    //TODO Check what the user want (processor['output'])
+    //TODO Send the result
 }
 
 app.listen(8080, () => console.log('Started on port 8080'));
