@@ -26,6 +26,7 @@ module.exports.createWorkspace = (uniqid, mapperId) => {
     } else {
         console.log('Directory already exists');
     }
+    return folderPath;
 };
 
 module.exports.createEmptyWorkspace = (uniqid) => {
