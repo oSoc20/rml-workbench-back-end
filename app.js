@@ -56,12 +56,13 @@ function handleRequest(download, execute, processors, sources, token) {
                     );
 
                     dockerHelper.editDC(token, processor.target, id);
-                })
-                .catch((err) => console.error(err))
-                .finally(() => {
+
                     if (execute) {
                         dockerPromises.push(dockerHelper.run(token, id));
                     }
+                })
+                .catch((err) => console.error(err))
+                .finally(() => {
                     id++;
                 });
         });
@@ -73,14 +74,14 @@ function handleRequest(download, execute, processors, sources, token) {
                     else return zipHelper.createZip(token); //TODO
                 })
                 .then(() => {
-                    resolve(`/workspaces/${token}/workspace.zip`);
+                    resolve(`/public/downloads/${token}.zip`);
                 })
                 .catch((err) => reject(err));
         } else {
             if (download) {
                 zipHelper
                     .createZip(token)
-                    .then(() => resolve(`/workspaces/${token}/workspace.zip`))
+                    .then(() => resolve(`/public/downloads/${token}.zip`))
                     .catch((err) => reject(err));
             }
         }
