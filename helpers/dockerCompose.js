@@ -10,7 +10,7 @@ module.exports.editDC = (uniqid, extension, mapperId) => {
 
         var result = data.replace(pattern, `output.${extension}`);
 
-        file_system.writeFileSync(filePath, result, 'utf8', function (err) {
+        file_system.writeFileSync(filePath, result, 'utf-8', function (err) {
             if (err) return console.log(err);
         });
 
