@@ -1,9 +1,9 @@
-version: '3.3'
+version: "3.3"
 services:
-    mapper:
-        build: ../../DEFAULT/mapper-image
-        volumes:
-            - ./input:/input
-            - ./output:/output
-            - ./mapper-config:/config
-        command: java -jar /RMLMapper.jar -v -m /config/mapping.rml.ttl -o /output/output.ttl
+  mapper:
+    build: ../../DEFAULT/mapper-image
+    volumes:
+      - ./input:/input
+      - ./output:/output
+      - ./mapper-config:/config
+    command: java -jar /RMLMapper.jar -v -m /config/mapping.rml.ttl -o /output/output.ttl
