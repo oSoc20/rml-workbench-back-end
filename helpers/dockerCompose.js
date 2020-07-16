@@ -20,14 +20,18 @@ module.exports.editDC = (uniqid, extension, mapperId) => {
 };
 
 module.exports.run = (uniqid, mapperId) => {
-    const folderPath = `./workspaces/${uniqid}/mapper-${mapperId}`;
+    return new Promise((resolve, reject) => {
+        const folderPath = `./workspaces/${uniqid}/mapper-${mapperId}`;
 
-    compose.upAll({ cwd: folderPath, log: true }).then(
-        () => {
-            console.log('Docker-compose completed!');
-        },
-        (err) => {
-            console.log('Something went wrong:', err);
-        },
-    );
+        compose.upAll({ cwd: folderPath, log: true }).then(
+            () => {
+                console.log('Docker-compose completed!');
+                resolve('Docker-compose completed!');
+            },
+            (err) => {
+                console.log('Something went wrong:', err);
+                reject(err);
+            },
+        );
+    });
 };
