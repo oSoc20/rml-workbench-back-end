@@ -51,7 +51,7 @@ function handleRequest(download, execute, processors, sources, token) {
                     //mapper-config
                     b64helper.base64ToFile(
                         processor.config,
-                        'mapper-config.rml.ttl',
+                        'mapping.rml.ttl',
                         `${mapperFolder}/mapper-config`,
                     );
 
