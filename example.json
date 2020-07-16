@@ -1,5 +1,6 @@
 {
-    "output": "zip",
+    "download": true,
+    "execute": true,
     "processors": [
         {
             "type": "mapper",
