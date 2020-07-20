@@ -12,3 +12,4 @@ node_modules/
 ## Ignore all subfolders except the DEFAULT
 workspaces/*
 !workspaces/DEFAULT/
+public/downloads/
