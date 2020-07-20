@@ -5,9 +5,9 @@ const morgan = require('morgan');
 const uniqid = require('uniqid');
 const bodyParser = require('body-parser');
 // Home made
-const b64helper = require('./helpers/base64');
-const workspaceHelper = require('./helpers/workspace');
 const dockerHelper = require('./helpers/dockerCompose');
+
+const workspaceHelper = require('./helpers/workspace');
 const zipHelper = require('./helpers/zip');
 
 app.use(morgan('dev'));
@@ -36,52 +36,30 @@ routerV1.post('/update', (req, res) => {
 
 function handleRequest(download, execute, processors, sources, token) {
     return new Promise((resolve, reject) => {
-        let id = 0;
         let dockerPromises = new Array();
+        const downloadPath = `/public/downloads/${token}.zip`;
 
-        processors.forEach((processor) => {
-            workspaceHelper
-                .createWorkspace(token, id)
-                .then((mapperFolder) => {
-                    //inputs
-                    for (source of processor.sources) {
-                        b64helper.base64ToFile(sources[source], source, `${mapperFolder}/input`);
-                    }
-
-                    //mapper-config
-                    b64helper.base64ToFile(
-                        processor.config,
-                        'mapping.rml.ttl',
-                        `${mapperFolder}/mapper-config`,
-                    );
-
-                    dockerHelper.editDC(token, processor.target, id);
-
-                    if (execute) {
-                        dockerPromises.push(dockerHelper.run(token, id));
-                    }
-                })
-                .catch((err) => console.error(err))
-                .finally(() => {
-                    id++;
-                });
-        });
+        workspaceHelper.deployWorkspace(processors, sources, token, execute);
 
         if (execute) {
+            for (let index = 0; index < processors.length; index++) {
+                dockerPromises.push(dockerHelper.run(token, processors[index].target, index));
+            }
+
             Promise.all(dockerPromises)
                 .then(() => {
                     if (download) return zipHelper.createZip(token);
-                    else return zipHelper.createZip(token); //TODO
+                    else return zipHelper.createZipWithOutput(token, processors.length);
                 })
                 .then(() => {
-                    resolve(`/public/downloads/${token}.zip`);
+                    resolve(downloadPath);
                 })
                 .catch((err) => reject(err));
         } else {
             if (download) {
                 zipHelper
                     .createZip(token)
-                    .then(() => resolve(`/public/downloads/${token}.zip`))
+                    .then(() => resolve(downloadPath))
                     .catch((err) => reject(err));
             }
         }
