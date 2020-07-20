@@ -15,18 +15,22 @@ module.exports.editDC = (uniqid, extension, mapperId) => {
         });
 
         if (data.indexOf('container_name') == -1)
-            file_system.appendFileSync(filePath, `    container_name: '${uniqid}'`);
+            file_system.appendFileSync(filePath, `    container_name: '${uniqid}-${mapperId}'`);
     });
 };
 
-module.exports.run = (uniqid, mapperId) => {
+module.exports.run = (uniqid, extension, mapperId) => {
     return new Promise((resolve, reject) => {
         const folderPath = `./workspaces/${uniqid}/mapper-${mapperId}`;
 
         compose.upAll({ cwd: folderPath, log: true }).then(
             () => {
-                console.log('Docker-compose completed!');
-                resolve('Docker-compose completed!');
+                const watcher = file_system.watch(`${folderPath}/output`, (eventType, filename) => {
+                    if (filename === `output.${extension}` && eventType === 'change') {
+                        watcher.close();
+                        resolve('Docker-compose completed!');
+                    }
+                });
             },
             (err) => {
                 console.log('Something went wrong:', err);
