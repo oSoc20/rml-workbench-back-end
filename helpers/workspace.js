@@ -2,6 +2,7 @@ const fs = require('fs');
 const ncp = require('ncp').ncp;
 const b64helper = require('./base64');
 const dockerHelper = require('./dockerCompose');
+const p = require('path');
 
 module.exports.createWorkspace = (uniqid, mapperId) => {
     return new Promise((resolve, reject) => {
@@ -60,5 +61,19 @@ module.exports.deployWorkspace = (processors, sources, token) => {
             .catch((err) => {
                 console.error(err);
             });
+    }
+};
+
+module.exports.deleteFolderRecursive = (path) => {
+    if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach((file, index) => {
+            const curPath = p.join(path, file);
+            if (fs.lstatSync(curPath).isDirectory()) {
+                this.deleteFolderRecursive(curPath);
+            } else {
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
     }
 };

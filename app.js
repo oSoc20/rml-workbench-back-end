@@ -8,7 +8,6 @@ const cors = require('cors');
 
 // Home made
 const dockerHelper = require('./helpers/dockerCompose');
-
 const workspaceHelper = require('./helpers/workspace');
 const zipHelper = require('./helpers/zip');
 
@@ -33,8 +32,16 @@ routerV1.post('/create', (req, res) => {
 });
 
 routerV1.post('/update', (req, res) => {
-    // workspaceHelper.createWorkspace(token);
-    // res.json({ token: token });
+    const token = req.body.token;
+    workspaceHelper.deleteFolderRecursive(`./workspaces/${token}`);
+    workspaceHelper.createEmptyWorkspace(token);
+    handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
+        .then((path) => {
+            res.json({ token, download: path });
+        })
+        .catch((err) => {
+            res.json({ token, error: err });
+        });
 });
 
 function handleRequest(download, execute, processors, sources, token) {
