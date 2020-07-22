@@ -4,6 +4,8 @@ const app = express();
 const morgan = require('morgan');
 const uniqid = require('uniqid');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
 // Home made
 const dockerHelper = require('./helpers/dockerCompose');
 
@@ -11,6 +13,7 @@ const workspaceHelper = require('./helpers/workspace');
 const zipHelper = require('./helpers/zip');
 
 app.use(morgan('dev'));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
