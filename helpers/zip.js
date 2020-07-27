@@ -1,16 +1,17 @@
-var file_system = require('fs');
+var fs = require('fs');
 var archiver = require('archiver');
+const mkdirp = require('mkdirp');
 
 module.exports.createZip = (uniqid) => {
     return new Promise((resolve, reject) => {
         const publicFolder = `./public/downloads/`;
         const folderPath = `./workspaces/${uniqid}`;
 
-        // if (!fs.existsSync(folderPath)){
-        //     fs.mkdirSync(folderPath);
-        // }
+        if (!fs.existsSync(publicFolder)) {
+            mkdirp.sync(publicFolder);
+        }
 
-        var output = file_system.createWriteStream(`${publicFolder}/${uniqid}.zip`);
+        var output = fs.createWriteStream(`${publicFolder}/${uniqid}.zip`);
         var archive = archiver('zip', { zlib: { level: 9 } });
 
         output.on('close', function () {
@@ -25,7 +26,6 @@ module.exports.createZip = (uniqid) => {
         archive.pipe(output);
 
         archive.directory(folderPath, false);
-        //archive.directory('./workspaces/DEFAULT/mapper-image/', 'mapper-image/', false);
         archive.finalize();
     });
 };
@@ -35,11 +35,11 @@ module.exports.createZipWithOutput = (uniqid, processorsLength) => {
         const publicFolder = `./public/downloads/`;
         const folderPath = `./workspaces/${uniqid}`;
 
-        // if (!fs.existsSync(folderPath)){
-        //     fs.mkdirSync(folderPath);
-        // }
+        if (!fs.existsSync(publicFolder)) {
+            mkdirp.sync(publicFolder);
+        }
 
-        var output = file_system.createWriteStream(`${publicFolder}/${uniqid}.zip`);
+        var output = fs.createWriteStream(`${publicFolder}/${uniqid}.zip`);
         var archive = archiver('zip', { zlib: { level: 9 } });
 
         output.on('close', function () {
@@ -55,12 +55,11 @@ module.exports.createZipWithOutput = (uniqid, processorsLength) => {
 
         for (let index = 0; index < processorsLength; index++) {
             archive.directory(
-                `${folderPath}/mapper-${index}/output`,
-                `output-mapper-${index}`,
+                `${folderPath}/processor-${index}/output`,
+                `output-processor-${index}`,
                 false,
             );
         }
-        //archive.directory('./workspaces/DEFAULT/mapper-image/', 'mapper-image/', false);
         archive.finalize();
     });
 };

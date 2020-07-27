@@ -51,7 +51,7 @@ app.get('/download/:id', (req, res) => {
 
 function handleRequest(download, execute, processors, sources, token) {
     return new Promise((resolve, reject) => {
-        let dockerPromises = new Array();
+        let dockerPromises = [];
         const downloadPath = `/download/${token}`;
 
         workspaceHelper.deployWorkspace(processors, sources, token, execute);
@@ -63,8 +63,11 @@ function handleRequest(download, execute, processors, sources, token) {
 
             Promise.all(dockerPromises)
                 .then(() => {
-                    if (download) return zipHelper.createZip(token);
-                    else return zipHelper.createZipWithOutput(token, processors.length);
+                    if (download) {
+                        return zipHelper.createZip(token);
+                    } else {
+                        return zipHelper.createZipWithOutput(token, processors.length);
+                    }
                 })
                 .then(() => {
                     resolve(downloadPath);
