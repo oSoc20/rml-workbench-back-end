@@ -12,21 +12,12 @@ module.exports.createWorkspace = (uniqid, mapperId) => {
         if (!fs.existsSync(folderPath)) {
             fs.mkdirSync(folderPath);
 
-            ncp(
-                './workspaces/DEFAULT',
-                folderPath,
-                {
-                    filter: (path) => {
-                        return !(path.indexOf('mapper-image') > -1);
-                    },
-                },
-                function (err) {
-                    if (err) {
-                        reject(err);
-                    }
-                    resolve(folderPath);
-                },
-            );
+            ncp('./workspaces/DEFAULT', folderPath, {}, function (err) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(folderPath);
+            });
         } else {
             reject(new Error('Directory already exists'));
         }
