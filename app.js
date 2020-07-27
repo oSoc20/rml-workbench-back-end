@@ -63,8 +63,11 @@ function handleRequest(download, execute, processors, sources, token) {
 
             Promise.all(dockerPromises)
                 .then(() => {
-                    if (download) return zipHelper.createZip(token);
-                    else return zipHelper.createZipWithOutput(token, processors.length);
+                    if (download) {
+                        return zipHelper.createZip(token);
+                    } else {
+                        return zipHelper.createZipWithOutput(token, processors.length);
+                    }
                 })
                 .then(() => {
                     resolve(downloadPath);
