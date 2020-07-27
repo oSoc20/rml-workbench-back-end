@@ -56,6 +56,8 @@ module.exports.deployWorkspace = (processors, sources, token) => {
                     `${processorFolder}/mapper-config`,
                 );
 
+                this.updateMapperConfigFile(token, index);
+
                 if (processor.type === 'mapper') {
                     dockerHelper.editMapperDC(token, processor.target, index);
                 }
@@ -79,4 +81,19 @@ module.exports.deleteFolderRecursive = (path) => {
         });
         fs.rmdirSync(path);
     }
+};
+
+module.exports.updateMapperConfigFile = (uniqid, processorId) => {
+    const filePath = `./workspaces/${uniqid}/processor-${processorId}/mapper-config/mapping.rml.ttl`;
+    const pattern = /(?<=rml:source )"(\w*.\w*)"/g;
+
+    fs.readFile(filePath, 'utf-8', function (err, data) {
+        if (err) return console.log(err);
+
+        let result = data.replace(pattern, '"input/$1"');
+
+        fs.writeFileSync(filePath, result, 'utf-8', function (err) {
+            if (err) return console.log(err);
+        });
+    });
 };
