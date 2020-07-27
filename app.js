@@ -44,10 +44,15 @@ routerV1.post('/update', (req, res) => {
         });
 });
 
+app.get('/download/:id', (req, res) => {
+    const file = `./public/downloads/${req.params.id}.zip`;
+    res.download(file);
+});
+
 function handleRequest(download, execute, processors, sources, token) {
     return new Promise((resolve, reject) => {
         let dockerPromises = new Array();
-        const downloadPath = `/public/downloads/${token}.zip`;
+        const downloadPath = `/download/${token}`;
 
         workspaceHelper.deployWorkspace(processors, sources, token, execute);
 
