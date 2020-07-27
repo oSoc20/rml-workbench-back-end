@@ -1,8 +1,8 @@
 var file_system = require('fs');
 var compose = require('docker-compose');
 
-module.exports.editDC = (uniqid, extension, mapperId) => {
-    const filePath = `./workspaces/${uniqid}/mapper-${mapperId}/docker-compose.yml`;
+module.exports.editMapperDC = (uniqid, extension, mapperId) => {
+    const filePath = `./workspaces/${uniqid}/processor-${mapperId}/docker-compose.yml`;
     const pattern = /output\.\w*/g;
 
     file_system.readFile(filePath, 'utf-8', function (err, data) {
@@ -19,9 +19,9 @@ module.exports.editDC = (uniqid, extension, mapperId) => {
     });
 };
 
-module.exports.run = (uniqid, extension, mapperId) => {
+module.exports.run = (uniqid, extension, processorId) => {
     return new Promise((resolve, reject) => {
-        const folderPath = `./workspaces/${uniqid}/mapper-${mapperId}`;
+        const folderPath = `./workspaces/${uniqid}/processor-${processorId}`;
 
         compose.upAll({ cwd: folderPath, log: true }).then(
             () => {

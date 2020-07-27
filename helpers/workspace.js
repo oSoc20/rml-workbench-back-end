@@ -4,9 +4,9 @@ const b64helper = require('./base64');
 const dockerHelper = require('./dockerCompose');
 const p = require('path');
 
-module.exports.createWorkspace = (uniqid, mapperId) => {
+module.exports.createWorkspace = (uniqid, processorId) => {
     return new Promise((resolve, reject) => {
-        const folderPath = `./workspaces/${uniqid}/mapper-${mapperId}`;
+        const folderPath = `./workspaces/${uniqid}/processor-${processorId}`;
         ncp.limit = 16;
 
         if (!fs.existsSync(folderPath)) {
@@ -34,20 +34,32 @@ module.exports.deployWorkspace = (processors, sources, token) => {
         const processor = processors[index];
 
         this.createWorkspace(token, index)
-            .then((mapperFolder) => {
+            .then((processorFolder) => {
                 //inputs
-                for (source of processor.sources) {
-                    b64helper.base64ToFile(sources[source], source, `${mapperFolder}/input`);
-                }
+                processor.sources.forEach((sourceId) => {
+                    let source = sources.find((source) => source.id === sourceId);
+
+                    if (source.type === 'file') {
+                        b64helper.base64ToFile(
+                            source.source,
+                            source.filename,
+                            `${processorFolder}/input`,
+                        );
+                    }
+                    // Add more statements for other input type
+                });
 
                 //mapper-config
                 b64helper.base64ToFile(
                     processor.config,
                     'mapping.rml.ttl',
-                    `${mapperFolder}/mapper-config`,
+                    `${processorFolder}/mapper-config`,
                 );
 
-                dockerHelper.editDC(token, processor.target, index);
+                if (processor.type === 'mapper') {
+                    dockerHelper.editMapperDC(token, processor.target, index);
+                }
+                // Add more statements for other processor type
             })
             .catch((err) => {
                 console.error(err);
