@@ -1,6 +1,6 @@
 # RML.io Dashboard REST API
 
-The RML.io REST API allows to deploy workspaces in correlation with the RML.io Dashboard web application.
+The RML.io REST API allows to deploy workspaces in correlation with the [RML.io Dashboard web application](https://github.com/oSoc20/rml-workbench-front-end).
 
 ## Installation
 
