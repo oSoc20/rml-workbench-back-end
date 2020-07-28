@@ -26,6 +26,7 @@ app.use(cors(corsOptions));
 let routerV1 = express.Router();
 app.use('/api/v1', routerV1);
 
+routerV1.options('/create', cors());
 routerV1.post('/create', (req, res) => {
     const token = uniqid();
     workspaceHelper.createEmptyWorkspace(token);
