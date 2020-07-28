@@ -21,14 +21,15 @@ app.use('/api/v1', routerV1);
 
 routerV1.post('/create', (req, res) => {
     const token = uniqid();
-    workspaceHelper.createEmptyWorkspace(token);
-    handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
-        .then((path) => {
-            res.json({ token, download: path });
-        })
-        .catch((err) => {
-            res.json({ token, error: err });
-        });
+    res.json({ token });
+    // workspaceHelper.createEmptyWorkspace(token);
+    // handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
+    //     .then((path) => {
+    //         res.json({ token, download: path });
+    //     })
+    //     .catch((err) => {
+    //         res.json({ token, error: err });
+    //     });
 });
 
 routerV1.post('/update', (req, res) => {
