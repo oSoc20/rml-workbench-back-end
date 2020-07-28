@@ -11,10 +11,10 @@ const dockerHelper = require('./helpers/dockerCompose');
 const workspaceHelper = require('./helpers/workspace');
 const zipHelper = require('./helpers/zip');
 
+app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
 
 let routerV1 = express.Router();
 app.use('/api/v1', routerV1);
