@@ -12,7 +12,7 @@ npm install
 
 ## Usage
 
-You can use the classic node way to execute the REST API or use [PM2](https://www.npmjs.com/package/pm2)
+You can use the classic Node.js way to execute the REST API or use [PM2](https://www.npmjs.com/package/pm2)
 
 ```bash
 node app.js
