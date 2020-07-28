@@ -11,13 +11,6 @@ const dockerHelper = require('./helpers/dockerCompose');
 const workspaceHelper = require('./helpers/workspace');
 const zipHelper = require('./helpers/zip');
 
-let corsOptions = {
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-};
-
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -26,7 +19,6 @@ app.use(cors());
 let routerV1 = express.Router();
 app.use('/api/v1', routerV1);
 
-routerV1.options('/create', cors());
 routerV1.post('/create', (req, res) => {
     const token = uniqid();
     workspaceHelper.createEmptyWorkspace(token);
