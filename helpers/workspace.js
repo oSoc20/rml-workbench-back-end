@@ -3,6 +3,7 @@ const ncp = require('ncp').ncp;
 const b64helper = require('./base64');
 const dockerHelper = require('./dockerCompose');
 const p = require('path');
+const mkdirp = require('mkdirp');
 
 module.exports.createWorkspace = (uniqid, processorId) => {
     return new Promise((resolve, reject) => {
@@ -16,6 +17,9 @@ module.exports.createWorkspace = (uniqid, processorId) => {
                 if (err) {
                     reject(err);
                 }
+                mkdirp.sync(`${folderPath}/input`);
+                mkdirp.sync(`${folderPath}/output`);
+                mkdirp.sync(`${folderPath}/mapper-config`);
                 resolve(folderPath);
             });
         } else {
