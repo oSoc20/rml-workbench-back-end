@@ -12,9 +12,9 @@ const workspaceHelper = require('./helpers/workspace');
 const zipHelper = require('./helpers/zip');
 
 app.use(morgan('dev'));
-app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors({ origin: '*' }));
 
 let routerV1 = express.Router();
 app.use('/api/v1', routerV1);
