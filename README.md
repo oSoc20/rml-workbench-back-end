@@ -4,7 +4,7 @@ The RML.io REST API allows to deploy workspaces in correlation with the [RML.io 
 
 ## Installation
 
-Once downloaded on your machine, you will need to install the npm packages
+Once downloaded on your machine/server, you will need to install the npm packages
 
 ```bash
 npm install
