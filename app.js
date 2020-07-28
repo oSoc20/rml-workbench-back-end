@@ -11,15 +11,17 @@ const dockerHelper = require('./helpers/dockerCompose');
 const workspaceHelper = require('./helpers/workspace');
 const zipHelper = require('./helpers/zip');
 
+let corsOptions = {
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+};
+
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(cors({ origin: '*' }));
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
+app.use(cors(corsOptions));
 
 let routerV1 = express.Router();
 app.use('/api/v1', routerV1);
