@@ -26,7 +26,6 @@ routerV1.post('/create', (req, res) => {
     handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
         .then((path) => {
             res.json({ token, download: path });
-            io.to(token).emit('message', { type: 'success', content: path });
         })
         .catch((err) => {
             res.json({ token, error: err });
@@ -77,6 +76,7 @@ function handleRequest(download, execute, processors, sources, token) {
                 })
                 .then(() => {
                     io.to(token).emit('message', { type: 'success', content: downloadPath });
+                    console.log(`Normaly, it's ok ${token}`);
                 })
                 .catch((err) => io.to(token).emit('message', { type: 'Error', content: err }));
         } else {
@@ -98,8 +98,7 @@ const io = require('socket.io').listen(server);
 
 io.sockets.on('connection', (socket) => {
     socket.on('room', (room) => {
-        console.log(room['id']);
         socket.join(room['id']);
-        io.to(room['id']).emit('message', { type: 'success' });
+        io.to(token).emit('message', room);
     });
 });
