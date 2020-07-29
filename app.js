@@ -75,15 +75,17 @@ function handleRequest(download, execute, processors, sources, token) {
                     }
                 })
                 .then(() => {
-                    io.to(token).emit({ type: 'success', content: downloadPath });
+                    io.to(token).emit('message', { type: 'success', content: downloadPath });
                 })
-                .catch((err) => io.to(token).emit({ type: 'Error', content: err }));
+                .catch((err) => io.to(token).emit('message', { type: 'Error', content: err }));
         } else {
             if (download) {
                 zipHelper
                     .createZip(token)
-                    .then(() => io.to(token).emit({ type: 'success', content: downloadPath }))
-                    .catch((err) => io.to(token).emit({ type: 'Error', content: err }));
+                    .then(() =>
+                        io.to(token).emit('message', { type: 'success', content: downloadPath }),
+                    )
+                    .catch((err) => io.to(token).emit('message', { type: 'Error', content: err }));
             }
         }
         resolve(downloadPath);
