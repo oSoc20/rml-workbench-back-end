@@ -22,27 +22,22 @@ app.use('/api/v1', routerV1);
 
 routerV1.post('/create', (req, res) => {
     const token = uniqid();
+    const downloadPath = `/download/${token}`;
+
     workspaceHelper.createEmptyWorkspace(token);
-    handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
-        .then((path) => {
-            res.json({ token, download: path });
-        })
-        .catch((err) => {
-            res.json({ token, error: err });
-        });
+    handleRequest(req.body.processors, req.body.sources, token);
+    res.json({ token, download: downloadPath });
+    handleDocker(req.body.download, req.body.execute, req.body.processors, token, downloadPath);
 });
 
 routerV1.post('/update', (req, res) => {
     const token = req.body.token;
+
     workspaceHelper.deleteFolderRecursive(`./workspaces/${token}`);
     workspaceHelper.createEmptyWorkspace(token);
-    handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
-        .then((path) => {
-            res.json({ token, download: path });
-        })
-        .catch((err) => {
-            res.json({ token, error: err });
-        });
+    handleRequest(req.body.processors, req.body.sources, token);
+    res.json({ token, download: downloadPath });
+    handleDocker(req.body.download, req.body.execute, req.body.processors, token, downloadPath);
 });
 
 app.get('/download/:id', (req, res) => {
@@ -54,50 +49,47 @@ app.get('/download/:id', (req, res) => {
     }
 });
 
-function handleRequest(download, execute, processors, sources, token) {
-    return new Promise((resolve, reject) => {
+function handleRequest(processors, sources, token) {
+    workspaceHelper.deployWorkspace(processors, sources, token);
+}
+
+function handleDocker(download, execute, processors, token, downloadPath) {
+    if (execute) {
         let dockerPromises = [];
-        const downloadPath = `/download/${token}`;
+        for (let index = 0; index < processors.length; index++) {
+            dockerPromises.push(dockerHelper.run(token, processors[index].target, index));
+        }
 
-        workspaceHelper.deployWorkspace(processors, sources, token, execute);
-
-        if (execute) {
-            for (let index = 0; index < processors.length; index++) {
-                dockerPromises.push(dockerHelper.run(token, processors[index].target, index));
-            }
-
-            Promise.all(dockerPromises)
-                .then(() => {
-                    console.log(`Docker finished`);
-                    if (download) {
-                        return zipHelper.createZip(token);
-                    } else {
-                        return zipHelper.createZipWithOutput(token, processors.length);
-                    }
-                })
-                .then(() => {
-                    io.to(token).emit('message', { type: 'success', content: downloadPath });
-                    console.log(`Normaly, it's ok ${token}`);
-                })
+        Promise.all(dockerPromises)
+            .then(() => {
+                console.log(`Docker finished`);
+                if (download) {
+                    return zipHelper.createZip(token);
+                } else {
+                    return zipHelper.createZipWithOutput(token, processors.length);
+                }
+            })
+            .then(() => {
+                io.to(token).emit('message', { type: 'success', content: downloadPath });
+                console.log(`Normaly, it's ok ${token}`);
+            })
+            .catch((err) => {
+                io.to(token).emit('message', { type: 'Error', content: err });
+                console.error(err);
+            });
+    } else {
+        if (download) {
+            zipHelper
+                .createZip(token)
+                .then(() =>
+                    io.to(token).emit('message', { type: 'success', content: downloadPath }),
+                )
                 .catch((err) => {
                     io.to(token).emit('message', { type: 'Error', content: err });
                     console.error(err);
                 });
-        } else {
-            if (download) {
-                zipHelper
-                    .createZip(token)
-                    .then(() =>
-                        io.to(token).emit('message', { type: 'success', content: downloadPath }),
-                    )
-                    .catch((err) => {
-                        io.to(token).emit('message', { type: 'Error', content: err });
-                        console.error(err);
-                    });
-            }
         }
-        resolve(downloadPath);
-    });
+    }
 }
 
 const server = app.listen(8080, () => console.log('Started on port 8080'));
