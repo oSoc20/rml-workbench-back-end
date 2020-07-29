@@ -6,6 +6,8 @@ const uniqid = require('uniqid');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 // Home made
 const dockerHelper = require('./helpers/dockerCompose');
@@ -65,6 +67,10 @@ function handleRequest(download, execute, processors, sources, token) {
                 dockerPromises.push(dockerHelper.run(token, processors[index].target, index));
             }
 
+            io.on('connection', (socket) => {
+                socket.join(token);
+            });
+
             Promise.all(dockerPromises)
                 .then(() => {
                     if (download) {
@@ -74,15 +80,15 @@ function handleRequest(download, execute, processors, sources, token) {
                     }
                 })
                 .then(() => {
-                    // resolve(downloadPath);
+                    io.to(token).emit({ type: 'success', content: downloadPath });
                 })
-                .catch((err) => reject(err));
+                .catch((err) => io.to(token).emit({ type: 'Error', content: err }));
         } else {
             if (download) {
                 zipHelper
                     .createZip(token)
-                    // .then(() => resolve(downloadPath))
-                    .catch((err) => reject(err));
+                    .then(() => io.to(token).emit({ type: 'success', content: downloadPath }))
+                    .catch((err) => io.to(token).emit({ type: 'Error', content: err }));
             }
         }
         resolve(downloadPath);
@@ -90,3 +96,4 @@ function handleRequest(download, execute, processors, sources, token) {
 }
 
 app.listen(8080, () => console.log('Started on port 8080'));
+server.listen(3000);
