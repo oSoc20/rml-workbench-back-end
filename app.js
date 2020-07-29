@@ -39,6 +39,7 @@ routerV1.post('/update', (req, res) => {
     handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
         .then((path) => {
             res.json({ token, download: path });
+            io.to(token).emit('hello world');
         })
         .catch((err) => {
             res.json({ token, error: err });
