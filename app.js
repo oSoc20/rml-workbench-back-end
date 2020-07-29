@@ -68,6 +68,7 @@ function handleRequest(download, execute, processors, sources, token) {
 
             Promise.all(dockerPromises)
                 .then(() => {
+                    console.log(`Docker finished`);
                     if (download) {
                         return zipHelper.createZip(token);
                     } else {
@@ -78,7 +79,10 @@ function handleRequest(download, execute, processors, sources, token) {
                     io.to(token).emit('message', { type: 'success', content: downloadPath });
                     console.log(`Normaly, it's ok ${token}`);
                 })
-                .catch((err) => io.to(token).emit('message', { type: 'Error', content: err }));
+                .catch((err) => {
+                    io.to(token).emit('message', { type: 'Error', content: err });
+                    console.error(err);
+                });
         } else {
             if (download) {
                 zipHelper
@@ -86,7 +90,10 @@ function handleRequest(download, execute, processors, sources, token) {
                     .then(() =>
                         io.to(token).emit('message', { type: 'success', content: downloadPath }),
                     )
-                    .catch((err) => io.to(token).emit('message', { type: 'Error', content: err }));
+                    .catch((err) => {
+                        io.to(token).emit('message', { type: 'Error', content: err });
+                        console.error(err);
+                    });
             }
         }
         resolve(downloadPath);
@@ -98,6 +105,7 @@ const io = require('socket.io').listen(server);
 
 io.sockets.on('connection', (socket) => {
     socket.on('room', (room) => {
+        console.log(room['id']);
         socket.join(room['id']);
     });
 });
