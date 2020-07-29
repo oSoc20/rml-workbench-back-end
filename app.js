@@ -39,7 +39,6 @@ routerV1.post('/update', (req, res) => {
     handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
         .then((path) => {
             res.json({ token, download: path });
-            io.to(token).emit('hello world');
         })
         .catch((err) => {
             res.json({ token, error: err });
@@ -56,11 +55,6 @@ app.get('/download/:id', (req, res) => {
 });
 
 function handleRequest(download, execute, processors, sources, token) {
-    io.on('connection', (socket) => {
-        socket.join(token);
-        console.log(`Joined the room ${token}`);
-    });
-
     return new Promise((resolve, reject) => {
         let dockerPromises = [];
         const downloadPath = `/download/${token}`;
@@ -98,3 +92,9 @@ function handleRequest(download, execute, processors, sources, token) {
 
 const server = app.listen(8080, () => console.log('Started on port 8080'));
 const io = require('socket.io').listen(server);
+
+io.sockets.on('connection', (socket) => {
+    socket.on('room', (room) => {
+        socket.join(room);
+    });
+});
