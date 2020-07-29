@@ -56,6 +56,11 @@ app.get('/download/:id', (req, res) => {
 });
 
 function handleRequest(download, execute, processors, sources, token) {
+    io.on('connection', (socket) => {
+        socket.join(token);
+        console.log(`Joined the room ${token}`);
+    });
+
     return new Promise((resolve, reject) => {
         let dockerPromises = [];
         const downloadPath = `/download/${token}`;
@@ -66,10 +71,6 @@ function handleRequest(download, execute, processors, sources, token) {
             for (let index = 0; index < processors.length; index++) {
                 dockerPromises.push(dockerHelper.run(token, processors[index].target, index));
             }
-
-            io.on('connection', (socket) => {
-                socket.join(token);
-            });
 
             Promise.all(dockerPromises)
                 .then(() => {
