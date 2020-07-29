@@ -51,8 +51,9 @@ app.get('/download/:id', (req, res) => {
     const file = `./public/downloads/${req.params.id}.zip`;
     if (fs.existsSync(file)) {
         res.download(file);
+    } else {
+        res.status(404).send('File is not ready yet.');
     }
-    res.status(404).send('File is not ready yet.');
 });
 
 function handleRequest(download, execute, processors, sources, token) {
