@@ -6,8 +6,6 @@ const uniqid = require('uniqid');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
 
 // Home made
 const dockerHelper = require('./helpers/dockerCompose');
@@ -96,5 +94,5 @@ function handleRequest(download, execute, processors, sources, token) {
     });
 }
 
-app.listen(8080, () => console.log('Started on port 8080'));
-server.listen(3000);
+const server = app.listen(8080, () => console.log('Started on port 8080'));
+const io = require('socket.io').listen(server);
