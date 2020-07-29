@@ -26,18 +26,17 @@ routerV1.post('/create', (req, res) => {
 
     workspaceHelper.createEmptyWorkspace(token);
     handleRequest(req.body.processors, req.body.sources, token);
-    res.json({ token, download: downloadPath });
     handleDocker(req.body.download, req.body.execute, req.body.processors, token, downloadPath);
+    res.json({ token, download: downloadPath });
 });
 
 routerV1.post('/update', (req, res) => {
     const token = req.body.token;
-
     workspaceHelper.deleteFolderRecursive(`./workspaces/${token}`);
     workspaceHelper.createEmptyWorkspace(token);
     handleRequest(req.body.processors, req.body.sources, token);
-    res.json({ token, download: downloadPath });
     handleDocker(req.body.download, req.body.execute, req.body.processors, token, downloadPath);
+    res.json({ token, download: downloadPath });
 });
 
 app.get('/download/:id', (req, res) => {
