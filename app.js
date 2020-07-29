@@ -28,6 +28,10 @@ routerV1.post('/create', (req, res) => {
     handleRequest(req.body.processors, req.body.sources, token);
     handleDocker(req.body.download, req.body.execute, req.body.processors, token, downloadPath);
     res.json({ token, download: downloadPath });
+
+    setTimeout(() => {
+        io.to(token).emit('message', { type: 'success', content: 'just a string for now' });
+    }, 1000);
 });
 
 routerV1.post('/update', (req, res) => {
