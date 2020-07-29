@@ -100,6 +100,6 @@ io.sockets.on('connection', (socket) => {
     socket.on('room', (room) => {
         console.log(room['id']);
         socket.join(room['id']);
-        io.to(room['id']).emit('message', { type: 'success', content: path });
+        io.to(room['id']).emit('message', { type: 'success' });
     });
 });
