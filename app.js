@@ -26,7 +26,7 @@ routerV1.post('/create', (req, res) => {
     handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
         .then((path) => {
             res.json({ token, download: path });
-            // io.sockets.to(token).emit('message', { type: 'success', content: path });
+            io.to(token).emit('message', { type: 'success', content: path });
         })
         .catch((err) => {
             res.json({ token, error: err });
@@ -76,25 +76,17 @@ function handleRequest(download, execute, processors, sources, token) {
                     }
                 })
                 .then(() => {
-                    io.sockets
-                        .to(token)
-                        .emit('message', { type: 'success', content: downloadPath });
+                    io.to(token).emit('message', { type: 'success', content: downloadPath });
                 })
-                .catch((err) =>
-                    io.sockets.to(token).emit('message', { type: 'Error', content: err }),
-                );
+                .catch((err) => io.to(token).emit('message', { type: 'Error', content: err }));
         } else {
             if (download) {
                 zipHelper
                     .createZip(token)
                     .then(() =>
-                        io.sockets
-                            .to(token)
-                            .emit('message', { type: 'success', content: downloadPath }),
+                        io.to(token).emit('message', { type: 'success', content: downloadPath }),
                     )
-                    .catch((err) =>
-                        io.sockets.to(token).emit('message', { type: 'Error', content: err }),
-                    );
+                    .catch((err) => io.to(token).emit('message', { type: 'Error', content: err }));
             }
         }
         resolve(downloadPath);
@@ -106,7 +98,8 @@ const io = require('socket.io').listen(server);
 
 io.sockets.on('connection', (socket) => {
     socket.on('room', (room) => {
-        console.log(room);
-        socket.join(room);
+        console.log(room['id']);
+        socket.join(room['id']);
+        io.to(token).emit('message', { type: 'success', content: path });
     });
 });
