@@ -99,6 +99,5 @@ const io = require('socket.io').listen(server);
 io.sockets.on('connection', (socket) => {
     socket.on('room', (room) => {
         socket.join(room['id']);
-        io.to(token).emit('message', room);
     });
 });
