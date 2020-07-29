@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const uniqid = require('uniqid');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const fs = require('fs');
 
 // Home made
 const dockerHelper = require('./helpers/dockerCompose');
@@ -21,15 +22,14 @@ app.use('/api/v1', routerV1);
 
 routerV1.post('/create', (req, res) => {
     const token = uniqid();
-    res.json({ token });
-    // workspaceHelper.createEmptyWorkspace(token);
-    // handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
-    //     .then((path) => {
-    //         res.json({ token, download: path });
-    //     })
-    //     .catch((err) => {
-    //         res.json({ token, error: err });
-    //     });
+    workspaceHelper.createEmptyWorkspace(token);
+    handleRequest(req.body.download, req.body.execute, req.body.processors, req.body.sources, token)
+        .then((path) => {
+            res.json({ token, download: path });
+        })
+        .catch((err) => {
+            res.json({ token, error: err });
+        });
 });
 
 routerV1.post('/update', (req, res) => {
@@ -47,7 +47,10 @@ routerV1.post('/update', (req, res) => {
 
 app.get('/download/:id', (req, res) => {
     const file = `./public/downloads/${req.params.id}.zip`;
-    res.download(file);
+    if (fs.existsSync(file)) {
+        res.download(file);
+    }
+    res.status(404).send('File is not ready yet.');
 });
 
 function handleRequest(download, execute, processors, sources, token) {
@@ -71,17 +74,18 @@ function handleRequest(download, execute, processors, sources, token) {
                     }
                 })
                 .then(() => {
-                    resolve(downloadPath);
+                    // resolve(downloadPath);
                 })
                 .catch((err) => reject(err));
         } else {
             if (download) {
                 zipHelper
                     .createZip(token)
-                    .then(() => resolve(downloadPath))
+                    // .then(() => resolve(downloadPath))
                     .catch((err) => reject(err));
             }
         }
+        resolve(downloadPath);
     });
 }
 
