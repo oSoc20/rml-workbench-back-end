@@ -25,10 +25,14 @@ module.exports.run = (uniqid, extension, processorId) => {
 
         compose.upAll({ cwd: folderPath, log: true }).then(
             () => {
+                console.log('Docker is done');
                 const watcher = file_system.watch(`${folderPath}/output`, (eventType, filename) => {
                     if (filename === `output.${extension}` && eventType === 'change') {
                         watcher.close();
+                        console.log('Docker is done AND If check');
                         resolve('Docker-compose completed!');
+                    } else {
+                        console.log('Docker is done AND If not check');
                     }
                 });
             },
