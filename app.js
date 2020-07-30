@@ -20,26 +20,35 @@ app.use(bodyParser.urlencoded({ extended: true }));
 let routerV1 = express.Router();
 app.use('/api/v1', routerV1);
 
+let workspacesToRun = [];
+
 routerV1.post('/create', (req, res) => {
     const token = uniqid();
     const downloadPath = `/download/${token}`;
 
     workspaceHelper.createEmptyWorkspace(token);
-    handleRequest(req.body.processors, req.body.sources, token);
-    handleDocker(req.body.download, req.body.execute, req.body.processors, token, downloadPath);
+    handleRequest(
+        req.body.download,
+        req.body.execute,
+        req.body.processors,
+        req.body.sources,
+        token,
+    );
     res.json({ token, download: downloadPath });
-
-    setTimeout(() => {
-        io.to(token).emit('message', { type: 'success', content: 'just a string for now' });
-    }, 1000);
 });
 
 routerV1.post('/update', (req, res) => {
     const token = req.body.token;
+
     workspaceHelper.deleteFolderRecursive(`./workspaces/${token}`);
     workspaceHelper.createEmptyWorkspace(token);
-    handleRequest(req.body.processors, req.body.sources, token);
-    handleDocker(req.body.download, req.body.execute, req.body.processors, token, downloadPath);
+    handleRequest(
+        req.body.download,
+        req.body.execute,
+        req.body.processors,
+        req.body.sources,
+        token,
+    );
     res.json({ token, download: downloadPath });
 });
 
@@ -52,47 +61,67 @@ app.get('/download/:id', (req, res) => {
     }
 });
 
-function handleRequest(processors, sources, token) {
+function handleRequest(download, execute, processors, sources, token) {
     workspaceHelper.deployWorkspace(processors, sources, token);
+    workspacesToRun.push({ download, execute, processors, token });
 }
 
-function handleDocker(download, execute, processors, token, downloadPath) {
-    if (execute) {
-        let dockerPromises = [];
-        for (let index = 0; index < processors.length; index++) {
-            dockerPromises.push(dockerHelper.run(token, processors[index].target, index));
-        }
+function handleDocker() {
+    console.log('Running handleDocker');
+    workspacesToRun.forEach((workspace) => {
+        const downloadPath = `/download/${workspace.token}`;
+        console.log(`Running ${workspace.token}`);
 
-        Promise.all(dockerPromises)
-            .then(() => {
-                console.log(`Docker finished`);
-                if (download) {
-                    return zipHelper.createZip(token);
-                } else {
-                    return zipHelper.createZipWithOutput(token, processors.length);
-                }
-            })
-            .then(() => {
-                io.to(token).emit('message', { type: 'success', content: downloadPath });
-                console.log(`Normaly, it's ok ${token}`);
-            })
-            .catch((err) => {
-                io.to(token).emit('message', { type: 'Error', content: err });
-                console.error(err);
-            });
-    } else {
-        if (download) {
-            zipHelper
-                .createZip(token)
-                .then(() =>
-                    io.to(token).emit('message', { type: 'success', content: downloadPath }),
-                )
+        if (workspace.execute) {
+            let dockerPromises = [];
+            for (let index = 0; index < workspace.processors.length; index++) {
+                dockerPromises.push(
+                    dockerHelper.run(workspace.token, workspace.processors[index].target, index),
+                );
+            }
+
+            Promise.all(dockerPromises)
+                .then(() => {
+                    console.log(`Dockers finished`);
+                    if (workspace.download) {
+                        return zipHelper.createZip(workspace.token);
+                    } else {
+                        return zipHelper.createZipWithOutput(
+                            workspace.token,
+                            workspace.processors.length,
+                        );
+                    }
+                })
+                .then(() => {
+                    io.to(workspace.token).emit('message', {
+                        type: 'success',
+                        content: downloadPath,
+                    });
+                    console.log('Message execute emitted');
+                })
                 .catch((err) => {
-                    io.to(token).emit('message', { type: 'Error', content: err });
+                    io.to(workspace.token).emit('message', { type: 'Error', content: err });
                     console.error(err);
                 });
+        } else {
+            if (workspace.download) {
+                zipHelper
+                    .createZip(workspace.token)
+                    .then(
+                        () =>
+                            io
+                                .to(workspace.token)
+                                .emit('message', { type: 'success', content: downloadPath }),
+                        console.log('Message download emitted'),
+                    )
+                    .catch((err) => {
+                        io.to(workspace.token).emit('message', { type: 'Error', content: err });
+                        console.error(err);
+                    });
+            }
         }
-    }
+    });
+    console.log('Ending handleDocker');
 }
 
 const server = app.listen(8080, () => console.log('Started on port 8080'));
@@ -104,3 +133,5 @@ io.sockets.on('connection', (socket) => {
         socket.join(room['id']);
     });
 });
+
+setInterval(handleDocker(), 5000);
