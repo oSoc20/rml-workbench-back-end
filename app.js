@@ -120,6 +120,7 @@ function handleDocker() {
                     });
             }
         }
+        workspacesToRun.shift();
     });
     console.log('Ending handleDocker');
 }
