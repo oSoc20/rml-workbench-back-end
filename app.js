@@ -130,7 +130,7 @@ io.sockets.on('connection', (socket) => {
     socket.on('room', (room) => {
         console.log(room['id']);
         socket.join(room['id']);
-        let workspaceId = workspacesToRun.findIndex(room['id']);
+        let workspaceId = workspacesToRun.findIndex((el) => el.token == room['id']);
         if (workspaceId >= 0) {
             handleDocker(workspacesToRun[workspaceId]);
         } else {
