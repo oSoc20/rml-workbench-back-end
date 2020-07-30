@@ -130,15 +130,13 @@ const io = require('socket.io').listen(server);
 
 io.sockets.on('connection', (socket) => {
     socket.on('room', (room) => {
-        console.log(room['id']);
-        socket.join(room['id']);
-        let workspaceId = workspacesToRun.findIndex((el) => el.token == room['id']);
+        console.log(room);
+        socket.join(room);
+        let workspaceId = workspacesToRun.findIndex((el) => el.token == room);
         if (workspaceId >= 0) {
             handleDocker(workspacesToRun[workspaceId]);
         } else {
-            socket
-                .to(room['id'])
-                .emit('message', { type: 'error', content: 'Workspace not found' });
+            socket.to(room).emit('message', { type: 'error', content: 'Workspace not found' });
         }
     });
 });
