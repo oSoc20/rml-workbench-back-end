@@ -135,4 +135,4 @@ io.sockets.on('connection', (socket) => {
     });
 });
 
-setInterval(handleDocker(), 5000);
+setInterval(handleDocker, 5000);
