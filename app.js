@@ -70,7 +70,7 @@ function handleDocker(workspace) {
     console.log('Running handleDocker');
 
     const downloadPath = `/download/${workspace.token}`;
-    console.log(`Running ${workspace.token}`);
+    console.log(`Running`, workspace);
 
     if (workspace.execute) {
         let dockerPromises = [];
@@ -79,6 +79,8 @@ function handleDocker(workspace) {
                 dockerHelper.run(workspace.token, workspace.processors[index].target, index),
             );
         }
+
+        console.log(dockerPromises.length);
 
         Promise.all(dockerPromises)
             .then(() => {
